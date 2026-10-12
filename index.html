@@ -1,7 +1,93 @@
-   <!DOCTYPE html>
-   <html>
-   <body>
-     <h1>Check the console (F12)</h1>
-     <script src="capstoneproject.js"></script>
-   </body>
-   </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Internship: Assignments & Capstone</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f6f8; color: #1f2933; margin: 0; padding: 24px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { margin-bottom: 4px; }
+    p.sub { margin-top: 0; color: #52606d; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+    button { padding: 10px 14px; border: none; border-radius: 6px; background: #2563eb; color: #fff; font-size: 14px; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    button.capstone { background: #059669; }
+    button.capstone:hover { background: #047857; }
+    button.clear { background: #6b7280; }
+    h2 { font-size: 16px; }
+    pre { background: #111827; color: #e5e7eb; padding: 16px; border-radius: 8px; min-height: 220px; overflow-x: auto; white-space: pre-wrap; }
+    .err { color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>JavaScript Internship Project</h1>
+    <p class="sub">Click a button to run an assignment. The output appears below (the same text you would see in the console).</p>
+
+    <div class="buttons">
+      <button data-file="assignment1.js" data-title="Assignment 1: Variables & Data Types">Assignment 1</button>
+      <button data-file="assignment2.js" data-title="Assignment 2: Operators & Input">Assignment 2</button>
+      <button data-file="assignment3.js" data-title="Assignment 3: Conditionals">Assignment 3</button>
+      <button data-file="assignment4.js" data-title="Assignment 4: Loops">Assignment 4</button>
+      <button data-file="assignment5.js" data-title="Assignment 5: Functions & Scope">Assignment 5</button>
+      <button data-file="assignment6.js" data-title="Assignment 6: Arrays & Objects">Assignment 6</button>
+      <button class="capstone" data-file="capstoneproject.js" data-title="Capstone: Inventory & Analytics Dashboard">Capstone Project</button>
+      <button class="clear" id="clear">Clear</button>
+    </div>
+
+    <h2 id="current">Output</h2>
+    <pre id="output">Click a button above to run a script.</pre>
+  </div>
+
+  <script>
+    const outputEl = document.getElementById("output");
+    const titleEl = document.getElementById("current");
+
+    function format(arg) {
+      if (typeof arg === "object" && arg !== null) return JSON.stringify(arg);
+      return String(arg);
+    }
+
+    function print(text, isError) {
+      const line = document.createElement("div");
+      if (isError) line.className = "err";
+      line.textContent = text;
+      outputEl.appendChild(line);
+    }
+
+    async function runScript(file, title) {
+      outputEl.innerHTML = "";
+      titleEl.textContent = "Output: " + title;
+
+      // Send console.log output to the page as well as the real console
+      const originalLog = console.log;
+      console.log = (...args) => {
+        print(args.map(format).join(" "));
+        originalLog.apply(console, args);
+      };
+
+      try {
+        const response = await fetch(file);
+        if (!response.ok) throw new Error("Could not load " + file);
+        const code = await response.text();
+        new Function(code)(); // runs the script in its own scope so it can be re-run
+      } catch (error) {
+        print("Error: " + error.message, true);
+      } finally {
+        console.log = originalLog;
+      }
+    }
+
+    document.querySelectorAll("button[data-file]").forEach((btn) => {
+      btn.addEventListener("click", () => runScript(btn.dataset.file, btn.dataset.title));
+    });
+
+    document.getElementById("clear").addEventListener("click", () => {
+      outputEl.textContent = "";
+      titleEl.textContent = "Output";
+    });
+  </script>
+</body>
+</html>
