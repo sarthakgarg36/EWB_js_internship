@@ -1,7 +1,9 @@
 # JavaScript Internship: Assignments & Capstone Project
 
 This repository contains my solutions to six JavaScript assignments and a capstone mini project, completed as part of my internship.
+## 🔗 Live Demo
 
+**[View the live project](https://YOUR-USERNAME.github.io/YOUR-REPO-NAME/)**
 ## Contents
 
 | File | Topic |
